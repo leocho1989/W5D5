@@ -1,4 +1,8 @@
 def it_was_ok
+  Movie
+  .where(score: 2..3)
+  .select(:id, :title,:score)
+
   # Consider the following:
   #
   # Movie.where(yr: 1970..1979)
@@ -10,6 +14,11 @@ def it_was_ok
 end
 
 def harrison_ford
+  Movie
+  .joins(:actors)
+  .where('actors.name = \'Harrison Ford\'')
+  .where.not('castings.ord = 1')
+  .select(:id, :title)
   # Consider the following:
   #
   # Actor
@@ -24,6 +33,12 @@ def harrison_ford
 end
 
 def biggest_cast
+  Movie
+  .joins(:actors)
+  .group('movies.id')
+  .select(:id, :title)
+  .order('COUNT(castings.actor_id) DESC')
+  .limit(3)
   # Consider the following:
   #
   # Actor
@@ -41,6 +56,10 @@ def biggest_cast
 end
 
 def directed_by_one_of(them)
+  Movie
+  .joins(:director)
+  .where('actors.name IN (?)', them)
+  .select(:id, :title)
   # Consider the following:
   #
   # Movie.where('yr IN (?)', years)
@@ -56,6 +75,9 @@ def directed_by_one_of(them)
 end
 
 def movie_names_before_1940
+  Movie
+  .where('yr < 1940').pluck(:title)
+  # select(:title)
   # Consider the following:
   #
   # Movie.where('score < 2.0').pluck(:title)
